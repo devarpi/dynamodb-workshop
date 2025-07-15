@@ -64,3 +64,18 @@ func (a *DynamoDBAdapter) DeleteItem(ctx context.Context, key map[string]types.A
 	})
 	return err
 }
+
+func (a *DynamoDBAdapter) QueryItems(ctx context.Context, keyCondition string, expressionValues map[string]types.AttributeValue) ([]map[string]types.AttributeValue, error) {
+	input := &dynamodb.QueryInput{
+		TableName:                 aws.String(a.table),
+		KeyConditionExpression:    aws.String(keyCondition),
+		ExpressionAttributeValues: expressionValues,
+	}
+
+	result, err := a.client.Query(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	return result.Items, nil
+}
